@@ -1,0 +1,8 @@
+﻿CREATE TABLE [dbo].[Country]
+(
+	[Id] INT IDENTITY(1, 1) NOT NULL, 
+    [UId] UNIQUEIDENTIFIER NOT NULL DEFAULT (newid()), 
+    [Name] NVARCHAR(50) NOT NULL, 
+    [Code] NVARCHAR(10) NOT NULL,
+    CONSTRAINT [PK_Country] PRIMARY KEY CLUSTERED ([Id] ASC)
+)

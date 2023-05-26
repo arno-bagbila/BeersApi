@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="e7ab5ee2-c981-498f-9692-485352672c89" ChangeDateTime="07/09/2020 07:45:14">
+    <Property Name="ElementName" Value="[dbo].[BeerFlavour].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[BeerFlavour]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BeerId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="613277b3-31ea-455d-87ec-303492243a3d" ChangeDateTime="03/13/2021 14:01:01">
+    <Property Name="ElementName" Value="[dbo].[User].[UserName]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[User]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FirstName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="aecf2aca-e28b-446f-9d99-529e08477224" ChangeDateTime="03/14/2021 13:59:18">
+    <Property Name="ElementName" Value="[dbo].[Comment].[User]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Comment]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UserUId" />
+  </Operation>
+</Operations>

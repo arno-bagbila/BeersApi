@@ -1,0 +1,9 @@
+﻿CREATE TABLE [dbo].[Comment]
+(
+	[Id] INT IDENTITY(1, 1) NOT NULL, 
+    [BeerId] INT NOT NULL, 
+    [Body] NVARCHAR(3000) NOT NULL, 
+    [UserFirstName] NVARCHAR(256) NOT NULL, 
+    [UserUId] UNIQUEIDENTIFIER NOT NULL,
+    [DatePosted] DATETIME   NOT NULL CONSTRAINT [DF_Comment_DatePosted] DEFAULT GETUTCDATE()
+)
