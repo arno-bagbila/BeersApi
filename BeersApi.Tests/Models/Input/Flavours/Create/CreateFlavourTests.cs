@@ -10,64 +10,62 @@ namespace BeersApi.Tests.Models.Input.Flavours.Create
       private const int DescriptionMaxLength = 3000;
       private const int NameMaxLength = 50;
       private const int MinimumLength = 3;
-      private readonly CreateFlavourValidator _createFlavourValidator;
 
-      public static IEnumerable<object[]> GetInvalidNames()
+      private readonly CreateFlavourValidator _createFlavourValidator = new();
+
+
+
+      [Fact]
+      public void CreateFlavour_InvalidNames_ShouldHaveError()
       {
-         yield return new object[] { null, string.Empty, " ", new string('a', 51) };
+          var invalidNames = new List<string> { null, string.Empty, " ", new('a', NameMaxLength + 1) };
+
+          foreach (var invalidName in invalidNames)
+          {
+              var model = new CreateFlavour { Name = invalidName };
+              var validator = _createFlavourValidator.TestValidate(model);
+              validator.ShouldHaveValidationErrorFor(c => c.Name);
+          }
       }
 
-      public static IEnumerable<object[]> GetInvalidDescription()
+      [Fact]
+      public void CreateFlavour_NameTooLong_ShouldHaveError()
       {
-         yield return new object[] { null, string.Empty, " ", new string('a', 3001), "12" };
+          var model = new CreateFlavour { Name = new string('a', NameMaxLength + 1) };
+          var validator = _createFlavourValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Name)
+              .WithErrorMessage($"'Name' length cannot be greater than {NameMaxLength}.");
       }
 
-      public CreateFlavourTests()
-      {
-         _createFlavourValidator = new CreateFlavourValidator();
+      [Fact]
+      public void CreateFlavour_DescriptionTooLong_ShouldHaveError()
+      { 
+          var model = new CreateFlavour { Description = new string('a', DescriptionMaxLength + 1) };
+          var validator = _createFlavourValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Description)
+              .WithErrorMessage($"'Description' length cannot be greater than {DescriptionMaxLength}.");
       }
 
-      [Theory]
-      [MemberData(nameof(GetInvalidDescription))]
-      public void CreateFlavour_InvalidDescriptions_ShouldHaveError(string isNull, string empty, string whiteSpace, string maxLength, string minLength)
+      [Fact]
+      public void CreateFlavour_DescriptionTooShort_ShouldHaveError()
       {
-         _createFlavourValidator.ShouldHaveValidationErrorFor(c => c.Description, isNull)
-            .WithErrorMessage("'Description' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createFlavourValidator.ShouldHaveValidationErrorFor(c => c.Description, empty)
-            .WithErrorMessage("'Description' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createFlavourValidator.ShouldHaveValidationErrorFor(c => c.Description, whiteSpace)
-            .WithErrorMessage("'Description' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createFlavourValidator.ShouldHaveValidationErrorFor(c => c.Description, maxLength)
-            .WithErrorMessage($"'Description' length cannot be greater than {DescriptionMaxLength}.");
-
-         _createFlavourValidator.ShouldHaveValidationErrorFor(c => c.Description, minLength)
-            .WithErrorMessage($"'Description' length must be greater than {MinimumLength}.");
+          var model = new CreateFlavour { Description = "12" };
+          var validator = _createFlavourValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Description)
+                .WithErrorMessage($"'Description' length must be greater than {MinimumLength}.");
       }
 
-      [Theory]
-      [MemberData(nameof(GetInvalidNames))]
-      public void CreateFlavour_InvalidNames_ShouldHaveError(string isNull, string empty, string whiteSpace, string maxLength)
+      [Fact]
+      public void CreateFlavour_InvalidDescriptions_ShouldHaveError()
       {
-         _createFlavourValidator.ShouldHaveValidationErrorFor(c => c.Name, isNull)
-            .WithErrorMessage("'Name' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
+          var invalidDescriptions = new List<string> { null, string.Empty, " ", new('a', DescriptionMaxLength + 1) };
 
-         _createFlavourValidator.ShouldHaveValidationErrorFor(c => c.Name, empty)
-            .WithErrorMessage("'Name' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createFlavourValidator.ShouldHaveValidationErrorFor(c => c.Name, whiteSpace)
-            .WithErrorMessage("'Name' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createFlavourValidator.ShouldHaveValidationErrorFor(c => c.Name, maxLength)
-            .WithErrorMessage($"'Name' length cannot be greater than {NameMaxLength}.");
+          foreach (var invalidDescription in invalidDescriptions)
+          {
+              var model = new CreateFlavour { Description = invalidDescription };
+              var validator = _createFlavourValidator.TestValidate(model);
+              validator.ShouldHaveValidationErrorFor(c => c.Description);
+          }
       }
    }
 }

@@ -19,6 +19,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
 using System.Reflection;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 
 namespace BeersApi
 {
@@ -51,12 +52,13 @@ namespace BeersApi
          });
 
          services.AddControllers()
-            .AddNewtonsoftJson(options =>
-            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
-            .AddFluentValidation(f => f.RegisterValidatorsFromAssemblyContaining<Startup>());
+             .AddNewtonsoftJson(options =>
+                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+         services.AddFluentValidationAutoValidation()
+             .AddFluentValidationClientsideAdapters();
 
-         services.AddSingleton(x => new BlobServiceClient("UseDevelopmentStorage=true",
-            new BlobClientOptions(BlobClientOptions.ServiceVersion.V2019_07_07)));
+         services.AddSingleton(x => new BlobServiceClient("UseDevelopmentStorage=true", 
+             new BlobClientOptions(BlobClientOptions.ServiceVersion.V2019_07_07)));
 
          services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -108,10 +110,11 @@ namespace BeersApi
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
-            options.AddFluentValidationRules();
             options.EnableAnnotations();
          });
-      }
+
+         services.AddFluentValidationRulesToSwagger();
+        }
 
       public void ConfigureContainer(ContainerBuilder builder)
       {

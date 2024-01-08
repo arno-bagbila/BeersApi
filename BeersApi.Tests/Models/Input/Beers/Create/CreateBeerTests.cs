@@ -8,16 +8,12 @@ namespace BeersApi.Tests.Models.Input.Beers.Create
    public class CreateBeerTests
    {
 
-      private readonly CreateBeerValidator _createBeerValidator;
       private const int DescriptionMaxLength = 3000;
       private const int NameMaxLength = 50;
       private const int MinimumLength = 3;
       private const int UrlMaxLength = 2048;
 
-      public CreateBeerTests()
-      {
-         _createBeerValidator = new CreateBeerValidator();
-      }
+      private readonly CreateBeerValidator _createBeerValidator = new();
 
       [Fact]
       public void CreateBeer_InvalidNames_ShouldHaveError()
@@ -30,6 +26,42 @@ namespace BeersApi.Tests.Models.Input.Beers.Create
             var validator = _createBeerValidator.TestValidate(model);
             validator.ShouldHaveValidationErrorFor(c => c.Name);
          }
+      }
+
+      [Fact]
+      public void CreateBeer_NameTooLong_ShouldHaveError()
+      {
+          var model = new CreateBeer { Name = new string('a', 51) };
+          var validator = _createBeerValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Name)
+              .WithErrorMessage($"The length of 'Name' must be {NameMaxLength} characters or fewer. You entered {model.Name.Length} characters.");
+      }
+
+      [Fact]
+      public void CreateBeer_NameTooShort_ShouldHaveError()
+      {
+          var model = new CreateBeer { Name = "12" };
+          var validator = _createBeerValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Name)
+              .WithErrorMessage($"The length of 'Name' must be at least {MinimumLength} characters. You entered {model.Name.Length} characters.");
+      }
+
+      [Fact]
+      public void CreateBeer_DescriptionTooLong_ShouldHaveError()
+      {
+          var model = new CreateBeer { Description = new string('a', 3001) };
+          var validator = _createBeerValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Description)
+              .WithErrorMessage($"The length of 'Description' must be {DescriptionMaxLength} characters or fewer. You entered {model.Description.Length} characters.");
+      }
+
+      [Fact]
+      public void CreateBeer_DescriptionTooShort_ShouldHaveError()
+      {
+          var model = new CreateBeer { Description = "12" };
+          var validator = _createBeerValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Description)
+              .WithErrorMessage($"The length of 'Description' must be at least {MinimumLength} characters. You entered {model.Description.Length} characters.");
       }
 
       [Fact]
@@ -46,16 +78,34 @@ namespace BeersApi.Tests.Models.Input.Beers.Create
       }
 
       [Fact]
+      public void CreateBeer_EmptyLogoUrl_ShouldHaveError()
+      {
+          var invalidLogoUrls = new List<string> { null, string.Empty, " " };
+
+          foreach (var invalidLogoUrl in invalidLogoUrls)
+          {
+              var model = new CreateBeer { LogoUrl = invalidLogoUrl };
+              var validator = _createBeerValidator.TestValidate(model);
+              validator.ShouldHaveValidationErrorFor(c => c.LogoUrl)
+                  .WithErrorMessage("'LogoUrl' must not be null or empty.");
+          }
+      }
+
+      [Fact]
+      public void CreateBeer_LogoUrlTooLong_ShouldHaveError()
+      {
+          var model = new CreateBeer { LogoUrl = new string('a', 2049) };
+          var validator = _createBeerValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.LogoUrl)
+              .WithErrorMessage($"The length of 'Logo Url' must be {UrlMaxLength} characters or fewer. You entered {model.LogoUrl.Length} characters.");
+      }
+
+      [Fact]
       public void CreateBeer_InvalidLogoUrl_ShouldHaveError()
       {
-         var invalidUrls = new List<string> { null, string.Empty, " ", new string('a', 204), "logoUrl" };
-
-         foreach (var invalidUrl in invalidUrls)
-         {
-            var model = new CreateBeer { LogoUrl = invalidUrl };
-            var validator = _createBeerValidator.TestValidate(model);
-            validator.ShouldHaveValidationErrorFor(c => c.LogoUrl);
-         }
+          var model = new CreateBeer { LogoUrl = "LogoUrl" };
+          var validator = _createBeerValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.LogoUrl);
       }
 
       [Fact]

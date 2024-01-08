@@ -8,27 +8,11 @@ namespace BeersApi.Tests.Models.Input.Beers.Update
    public class UpdateBeerTests
    {
 
-      private readonly UpdateBeerValidator _updateBeerValidator;
+      private readonly UpdateBeerValidator _updateBeerValidator = new();
       private const int DescriptionMaxLength = 3000;
       private const int NameMaxLength = 50;
       private const int MinimumLength = 3;
       private const int UrlMaxLength = 2048;
-
-      public UpdateBeerTests()
-      {
-         _updateBeerValidator = new UpdateBeerValidator();
-      }
-
-
-      public static IEnumerable<object[]> GetInvalidTiwooRating()
-      {
-         yield return new object[] { 5.1, -1, 0.0 };
-      }
-
-      public static IEnumerable<object[]> GetInvalidAlcoholLevel()
-      {
-         yield return new object[] { 0.0, 100.1, -1.0 };
-      }
 
       [Fact]
       public void UpdateBeer_InvalidNames_ShouldHaveError()
@@ -173,33 +157,37 @@ namespace BeersApi.Tests.Models.Input.Beers.Update
       [Fact]
       public void UpdateBeer_InvalidCategoryId_ShouldHaveError()
       {
-         _updateBeerValidator.ShouldHaveValidationErrorFor(c => c.CategoryId, 0)
-            .WithErrorCode("NotEmptyValidator")
-            .WithErrorMessage("'Category Id' must not be empty.");
+          var model = new UpdateBeer { CategoryId = -0 };
+          var validator = _updateBeerValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.CategoryId)
+              .WithErrorMessage("'Category Id' must not be empty.");
       }
 
       [Fact]
       public void UpdateBeer_InvalidColorId_ShouldHaveError()
       {
-         _updateBeerValidator.ShouldHaveValidationErrorFor(c => c.ColorId, 0)
-            .WithErrorCode("NotEmptyValidator")
-            .WithErrorMessage("'Color Id' must not be empty.");
+          var model = new UpdateBeer { ColorId = -0 };
+            var validator = _updateBeerValidator.TestValidate(model);
+            validator.ShouldHaveValidationErrorFor(c => c.ColorId)
+                .WithErrorMessage("'Color Id' must not be empty.");
       }
 
       [Fact]
       public void UpdateBeer_InvalidCountryId_ShouldHaveError()
       {
-         _updateBeerValidator.ShouldHaveValidationErrorFor(c => c.CountryId, 0)
-            .WithErrorCode("NotEmptyValidator")
-            .WithErrorMessage("'Country Id' must not be empty.");
+          var model = new UpdateBeer { CountryId = -0 };
+          var validator = _updateBeerValidator.TestValidate(model);
+            validator.ShouldHaveValidationErrorFor(c => c.CountryId)
+                .WithErrorMessage("'Country Id' must not be empty.");
       }
 
       [Fact]
       public void UpdateBeer_InvalidFlavourIds_ShouldHaveError()
       {
-         _updateBeerValidator.ShouldHaveValidationErrorFor(c => c.FlavourIds, new List<int>())
-            .WithErrorCode("NotEmptyValidator")
-            .WithErrorMessage("'Flavour Ids' must not be empty.");
+          var model = new UpdateBeer { FlavourIds = new List<int>() };
+            var validator = _updateBeerValidator.TestValidate(model);
+                validator.ShouldHaveValidationErrorFor(c => c.FlavourIds)
+                    .WithErrorMessage("'Flavour Ids' must not be empty.");
       }
    }
 }

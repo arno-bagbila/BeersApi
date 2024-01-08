@@ -10,69 +10,33 @@ namespace BeersApi.Tests.Models.Input.Categories.Create
    {
       private const int DescriptionMaxLength = 3000;
       private const int NameMaxLength = 50;
-      private const int MinimumLength = 3;
 
-      public static IEnumerable<object[]> GetInvalidNames()
+      private readonly CreateCategoryValidator _createCategoryValidator = new();
+
+      [Fact]
+      public void CreateCategory_InvalidDescription_ShouldHaveError()
       {
-         yield return new object[] { null, string.Empty, " ", new string('a', 51), "12" };
+          var invalidDescriptions = new List<string> { null, string.Empty, " ", new('a', DescriptionMaxLength + 1), "12" };
+
+          foreach (var invalidDescription in invalidDescriptions)
+          {
+              var model = new CreateCategory { Description = invalidDescription };
+              var validator = _createCategoryValidator.TestValidate(model);
+              validator.ShouldHaveValidationErrorFor(c => c.Description);
+          }
       }
 
-      public static IEnumerable<object[]> GetInvalidDescription()
+      [Fact]
+      public void CreateCategory_InvalidName_ShouldHaveError()
       {
-         yield return new object[] { null, string.Empty, " ", new string('a', 3001), "12" };
-      }
+          var invalidNames = new List<string> { null, string.Empty, " ", new('a', NameMaxLength + 1), "12" };
 
-      private readonly CreateCategoryValidator _createCategoryValidator;
-
-      public CreateCategoryTests()
-      {
-         _createCategoryValidator = new CreateCategoryValidator();
-      }
-
-      [Theory]
-      [MemberData(nameof(GetInvalidDescription))]
-      public void CreateCategory_InvalidDescriptions_ShouldHaveError(string isNull, string empty, string whiteSpace, string maxLength, string minLength)
-      {
-         _createCategoryValidator.ShouldHaveValidationErrorFor(c => c.Description, isNull)
-            .WithErrorMessage("'Description' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createCategoryValidator.ShouldHaveValidationErrorFor(c => c.Description, empty)
-            .WithErrorMessage("'Description' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createCategoryValidator.ShouldHaveValidationErrorFor(c => c.Description, whiteSpace)
-            .WithErrorMessage("'Description' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createCategoryValidator.ShouldHaveValidationErrorFor(c => c.Description, maxLength)
-            .WithErrorMessage($"'Description' length cannot be greater than {DescriptionMaxLength}.");
-
-         _createCategoryValidator.ShouldHaveValidationErrorFor(c => c.Description, minLength)
-            .WithErrorMessage($"'Description' length must be greater than {MinimumLength}.");
-      }
-
-      [Theory]
-      [MemberData(nameof(GetInvalidNames))]
-      public void CreateCategory_InvalidNames_ShouldHaveError(string isNull, string empty, string whiteSpace, string maxLength, string minLength)
-      {
-         _createCategoryValidator.ShouldHaveValidationErrorFor(c => c.Name, isNull)
-            .WithErrorMessage("'Name' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createCategoryValidator.ShouldHaveValidationErrorFor(c => c.Name, empty)
-            .WithErrorMessage("'Name' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createCategoryValidator.ShouldHaveValidationErrorFor(c => c.Name, whiteSpace)
-            .WithErrorMessage("'Name' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _createCategoryValidator.ShouldHaveValidationErrorFor(c => c.Name, maxLength)
-            .WithErrorMessage($"'Name' length cannot be greater than {NameMaxLength}.");
-
-         _createCategoryValidator.ShouldHaveValidationErrorFor(c => c.Name, minLength)
-            .WithErrorMessage($"'Name' length must be greater than {MinimumLength}.");
+          foreach (var invalidName in invalidNames)
+          {
+              var model = new CreateCategory { Name = invalidName };
+              var validator = _createCategoryValidator.TestValidate(model);
+              validator.ShouldHaveValidationErrorFor(c => c.Name);
+          }
       }
    }
 }

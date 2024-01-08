@@ -7,47 +7,53 @@ namespace BeersApi.Tests.Models.Users.Create
 {
    public class CreateUserTests
    {
-      private readonly CreateUserValidator _createUserValidator;
-
-      public CreateUserTests()
-      {
-         _createUserValidator = new CreateUserValidator();
-      }
+      private readonly CreateUserValidator _createUserValidator = new();
 
       [Fact]
       public void CreateUser_InvalidEmails_ShouldHaveError()
       {
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.Email, "");
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.Email, string.Empty);
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.Email, " ");
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.Email, new string('a', 248) + "@test.com");
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.Email, "testemail");
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.Email, "@email");
+          var invalidEmails = new[] { null, string.Empty, " ", new string('a', 248) + "@test.com", "testemail", "@email"};
+
+          foreach (var invalidEmail in invalidEmails)
+          {
+                var model = new CreateUser { Email = invalidEmail };
+                var validator = _createUserValidator.TestValidate(model);
+                validator.ShouldHaveValidationErrorFor(c => c.Email);
+          }
       }
 
       [Fact]
       public void CreateUser_EmptyUId_ShouldHaveError()
       {
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.UId, Guid.Empty);
+          var model = new CreateUser { UId = Guid.Empty };
+          var validator = _createUserValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.UId);
       }
 
       [Fact]
       public void CreateUser_InvalidRoleName_ShouldHaveError()
       {
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.RoleName, "");
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.RoleName, "beersApiAdmin");
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.RoleName, " ");
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.RoleName, string.Empty);
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.RoleName, "0");
+          var invalidRoleNames = new[] { null, string.Empty, " ", "beersApiAdmin", "0" };
+
+          foreach (var invalidRoleName in invalidRoleNames)
+          {
+                    var model = new CreateUser { RoleName = invalidRoleName };
+                    var validator = _createUserValidator.TestValidate(model);
+                    validator.ShouldHaveValidationErrorFor(c => c.RoleName);
+          }
       }
 
       [Fact]
       public void CreateUser_InvalidUserName_ShouldHaveError()
       {
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.FirstName, "");
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.FirstName, " ");
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.FirstName, string.Empty);
-         _createUserValidator.ShouldHaveValidationErrorFor(u => u.FirstName, new string('a', 257));
+          var invalidUserNames = new[] { null, string.Empty, " ", new string('a', 257) };
+
+          foreach (var invalidUserName in invalidUserNames)
+          {
+                    var model = new CreateUser { FirstName = invalidUserName };
+                    var validator = _createUserValidator.TestValidate(model);
+                    validator.ShouldHaveValidationErrorFor(c => c.FirstName);
+          }
       }
    }
 }

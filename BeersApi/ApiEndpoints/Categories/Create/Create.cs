@@ -11,43 +11,33 @@ using System.Threading.Tasks;
 
 namespace BeersApi.ApiEndpoints.Categories.Create
 {
-   public class Create : BaseAsyncEndpoint
-      .WithRequest<CreateCommand>
-      .WithResponse<Category>
-   {
+    public class Create(IMapper mapper, IBeersApiContext ctx) : EndpointBaseAsync
+        .WithRequest<CreateCommand>
+        .WithActionResult<Category>
+    {
+        [HttpPost(CreateCommand.ROUTE)]
+        [SwaggerOperation(
+           Summary = "Creates a new category",
+           Description = "Creates a new category",
+           OperationId = "Category.Create",
+           Tags = ["Categories2"])]
+        public override async Task<ActionResult<Category>> HandleAsync([FromBody] CreateCommand request, CancellationToken cancellationToken)
+        {
+            var categoryWithSameName =
+               await ctx.Categories.FirstOrDefaultAsync(c => c.Name.ToLower() == request.CreateCategory.Name.ToLower(),
+                  cancellationToken);
 
-      private readonly IMapper _mapper;
-      private readonly IBeersApiContext _ctx;
+            if (categoryWithSameName != null)
+                throw BeersApiException.Create(BeersApiException.InvalidDataCode, "A category with the same name already exists.");
 
-      public Create(IMapper mapper, IBeersApiContext ctx)
-      {
-         _mapper = mapper;
-         _ctx = ctx;
-      }
+            var category = Domain.Entities.Category.Create(request.CreateCategory.Name, request.CreateCategory.Description);
 
-      [HttpPost(CreateCommand.ROUTE)]
-      [SwaggerOperation(
-         Summary = "Creates a new category",
-         Description = "Creates a new category",
-         OperationId = "Category.Create",
-         Tags = new[] { "Categories2" })]
-      public override async Task<ActionResult<Category>> HandleAsync([FromBody] CreateCommand request, CancellationToken cancellationToken)
-      {
-         var categoryWithSameName =
-            await _ctx.Categories.FirstOrDefaultAsync(c => c.Name.ToLower() == request.CreateCategory.Name.ToLower(),
-               cancellationToken);
+            await ctx.Categories.AddAsync(category, cancellationToken);
+            await ctx.SaveChangesAsync(cancellationToken);
 
-         if (categoryWithSameName != null)
-            throw BeersApiException.Create(BeersApiException.InvalidDataCode, "A category with the same name already exists.");
+            var result = mapper.Map<Category>(category);
 
-         var category = Domain.Entities.Category.Create(request.CreateCategory.Name, request.CreateCategory.Description);
-
-         await _ctx.Categories.AddAsync(category, cancellationToken);
-         await _ctx.SaveChangesAsync(cancellationToken);
-
-         var result = _mapper.Map<Category>(category);
-
-         return Ok(result);
-      }
-   }
+            return Ok(result);
+        }
+    }
 }
