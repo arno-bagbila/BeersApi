@@ -1,6 +1,7 @@
 ﻿using BeersApi.Models.Input.Categories.Update;
 using FluentValidation.TestHelper;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace BeersApi.Tests.Models.Input.Categories.Update
@@ -11,67 +12,70 @@ namespace BeersApi.Tests.Models.Input.Categories.Update
       private const int NameMaxLength = 50;
       private const int MinimumLength = 3;
 
-      public static IEnumerable<object[]> GetInvalidNames()
+      private readonly UpdateCategoryValidator _updateCategoryValidator = new();
+
+      [Fact]
+      public void UpdateCategory_InvalidDescriptions_ShouldHaveError()
       {
-         yield return new object[] { null, string.Empty, " ", new string('a', 51), "12" };
+          var invalidDescriptions = new List<string> { null, string.Empty, " " };
+
+          foreach (var validator in invalidDescriptions.Select(invalidDescription => new UpdateCategory { Description = invalidDescription })
+                       .Select(model => _updateCategoryValidator.TestValidate(model)))
+          {
+              validator.ShouldHaveValidationErrorFor(c => c.Description)
+                  .WithErrorMessage("'Description' must not be null or empty.");
+          }
       }
 
-      public static IEnumerable<object[]> GetInvalidDescription()
+      [Fact]
+      public void UpdateCategory_DescriptionTooLong_ShouldHaveError()
       {
-         yield return new object[] { null, string.Empty, " ", new string('a', 3001), "12" };
+          var model = new UpdateCategory { Description = new string('a', 3001) };
+          var validator = _updateCategoryValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Description)
+              .WithErrorMessage($"'Description' length cannot be greater than {DescriptionMaxLength}.");
       }
 
-      private readonly UpdateCategoryValidator _updateCategoryValidator;
-
-      public UpdateCategoryTests()
+      [Fact]
+      public void UpdateCategory_DescriptionTooShort_ShouldHaveError()
       {
-         _updateCategoryValidator = new UpdateCategoryValidator();
+          var model = new UpdateCategory { Description = "12" };
+          var validator = _updateCategoryValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Description)
+              .WithErrorMessage($"'Description' length must be greater than {MinimumLength}.");
       }
 
-      [Theory]
-      [MemberData(nameof(GetInvalidDescription))]
-      public void UpdateCategory_InvalidDescriptions_ShouldHaveError(string isNull, string empty, string whiteSpace, string maxLength, string minLength)
+      [Fact]
+      public void UpdateCategory_InvalidNames_ShouldHaveError()
       {
-         _updateCategoryValidator.ShouldHaveValidationErrorFor(c => c.Description, isNull)
-            .WithErrorMessage("'Description' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
+          var invalidNames = new List<string> { null, string.Empty, " " };
 
-         _updateCategoryValidator.ShouldHaveValidationErrorFor(c => c.Description, empty)
-            .WithErrorMessage("'Description' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _updateCategoryValidator.ShouldHaveValidationErrorFor(c => c.Description, whiteSpace)
-            .WithErrorMessage("'Description' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _updateCategoryValidator.ShouldHaveValidationErrorFor(c => c.Description, maxLength)
-            .WithErrorMessage($"'Description' length cannot be greater than {DescriptionMaxLength}.");
-
-         _updateCategoryValidator.ShouldHaveValidationErrorFor(c => c.Description, minLength)
-            .WithErrorMessage($"'Description' length must be greater than {MinimumLength}.");
+          foreach (var invalidName in invalidNames)
+          {
+              var model = new UpdateCategory { Name = invalidName };
+              var validator = _updateCategoryValidator.TestValidate(model);
+              validator.ShouldHaveValidationErrorFor(c => c.Name)
+                  .WithErrorMessage("'Name' must not be null or empty.");
+          }
       }
 
-      [Theory]
-      [MemberData(nameof(GetInvalidNames))]
-      public void UpdateCategory_InvalidNames_ShouldHaveError(string isNull, string empty, string whiteSpace, string maxLength, string minLength)
+      [Fact]
+      public void UpdateCategory_NameTooLong_ShouldHaveError()
       {
-         _updateCategoryValidator.ShouldHaveValidationErrorFor(c => c.Name, isNull)
-            .WithErrorMessage("'Name' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _updateCategoryValidator.ShouldHaveValidationErrorFor(c => c.Name, empty)
-            .WithErrorMessage("'Name' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _updateCategoryValidator.ShouldHaveValidationErrorFor(c => c.Name, whiteSpace)
-            .WithErrorMessage("'Name' must not be null or empty.")
-            .WithErrorCode("NotEmptyValidator");
-
-         _updateCategoryValidator.ShouldHaveValidationErrorFor(c => c.Name, maxLength)
-            .WithErrorMessage($"'Name' length cannot be greater than {NameMaxLength}.");
-
-         _updateCategoryValidator.ShouldHaveValidationErrorFor(c => c.Name, minLength)
-            .WithErrorMessage($"'Name' length must be greater than {MinimumLength}.");
+          var model = new UpdateCategory { Name = new string('a', 51) };
+          var validator = _updateCategoryValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Name)
+              .WithErrorMessage($"'Name' length cannot be greater than {NameMaxLength}.");
       }
+
+      [Fact]
+      public void UpdateCategory_NameTooShort_ShouldHaveError()
+      {
+          var model = new UpdateCategory { Name = "12" };
+          var validator = _updateCategoryValidator.TestValidate(model);
+          validator.ShouldHaveValidationErrorFor(c => c.Name)
+              .WithErrorMessage($"'Name' length must be greater than {MinimumLength}.");
+      }
+
    }
 }

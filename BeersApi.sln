@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28922.388
@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeersApi.Tests", "BeersApi.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeersApi.NUnit.FeatureTests", "BeersApi.NUnit.FeatureTests\BeersApi.NUnit.FeatureTests.csproj", "{49C5688E-74B5-4ECA-BFED-33AD8D780E79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureStorageManager", "AzureManager\AzureStorageManager.csproj", "{FC793880-2E0C-47C8-B8AA-AA5B4DCCE31E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureStorageManager", "AzureManager\AzureStorageManager.csproj", "{FC793880-2E0C-47C8-B8AA-AA5B4DCCE31E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

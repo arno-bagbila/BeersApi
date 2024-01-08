@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using MediatR;
 using System.Reflection;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Module = Autofac.Module;
 
 namespace BeersApi.Infrastructure.IoC.Installers
@@ -19,12 +21,8 @@ namespace BeersApi.Infrastructure.IoC.Installers
 
          RegisterHandlers(builder);
 
-         builder.Register<ServiceFactory>(ctx =>
-         {
-
-            var c = ctx.Resolve<IComponentContext>();
-            return t => c.Resolve(t);
-         });
+         var services = new ServiceCollection();
+         builder.Populate(services);
       }
 
       #endregion
