@@ -50,8 +50,7 @@ namespace BeersApi.Infrastructure.Middlewares.CustomClaims
                .FirstOrDefault()
                ?.AddClaim(new Claim("BeersApiRole", user.Role.ToString()));
 
-            httpContext.Response.Headers.Add(BEERSAPI_ROLE_HEADER, user.Role.ToString());
-
+            httpContext.Response.Headers.Append(BEERSAPI_ROLE_HEADER, user.Role.ToString());
          }
 
          await _next(httpContext);

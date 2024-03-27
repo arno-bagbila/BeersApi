@@ -1,5 +1,4 @@
-﻿using BeersApi.NUnit.FeatureTests.Infrastructure;
-using BeersApi.NUnit.FeatureTests.Infrastructure.Authentication;
+﻿using BeersApi.NUnit.FeatureTests.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -9,10 +8,6 @@ using System;
 using System.Configuration;
 using System.IO;
 using System.Net.Http;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace BeersApi.NUnit.FeatureTests
 {
