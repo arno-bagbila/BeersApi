@@ -88,14 +88,10 @@ namespace BeersApi
          });
 
          services.AddSingleton<IAuthorizationHandler, CanDoEverythingHandler>();
-
          services.AddScoped<ValidationFilterAttribute>();
-
          services.AddScoped<ValidatorActionFilter>();
-
-         services.AddAutoMapper(typeof(Startup));
-
-         services.AddDbContextPool<BeersApiContext>(options =>
+         services.AddFluentValidationRulesToSwagger();
+            services.AddDbContextPool<BeersApiContext>(options =>
             options.UseSqlServer(_configuration.GetConnectionString("beersApi_db")));
 
          // Register the Swagger generator, defining 1 or more Swagger documents
@@ -109,9 +105,7 @@ namespace BeersApi
             options.IncludeXmlComments(xmlPath);
             options.EnableAnnotations();
          });
-
-         services.AddFluentValidationRulesToSwagger();
-        }
+      }
 
       public void ConfigureContainer(ContainerBuilder builder)
       {
