@@ -2,8 +2,6 @@
 using Azure.Storage.Blobs;
 using BeersApi.ActionFilters;
 using BeersApi.Authorization;
-using BeersApi.Infrastructure.Middlewares.CustomClaims;
-using BeersApi.Infrastructure.Middlewares.CustomExceptionMiddleware;
 using DataAccess;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,7 +13,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
 using System.Reflection;
